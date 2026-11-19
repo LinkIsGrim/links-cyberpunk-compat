@@ -32,7 +32,7 @@ Install this folder as a mod (`r6/scripts/LinksCompat/` and `bin/x64/plugins/cyb
 
 `ModSettingsLock.reds` wraps the vanilla settings row (`SettingsSelectorController.Setup`). Every Mod Settings row passes through it, because Mod Settings' row controllers call `super.Setup` first. Rows whose variable path is `/mods/<locked mod>/…` are made non-interactive and labelled.
 
-In this redscript version, `@wrapMethod` can only target the game's own classes, not classes added by other mods. I verified this with the compiler against both Mod Settings' and Much Better AI's classes. That's why the lock hooks the vanilla row.
+`@wrapMethod` can only target the game's own classes, not classes added by other mods. The [redscript hook-annotation reference](https://wiki.redmodding.org/scripting-cyberpunk/redscript/language-reference/hook-annotations) says annotations "can't be used on modded methods or classes and native functions", and the compiler confirmed it against Mod Settings' and Much Better AI's classes. That's why the lock hooks the vanilla row.
 
 **Mods that don't use Mod Settings** get a CET Lua lock instead. Much Better AI keeps its settings in a CET menu and publishes each one as a TweakDB value (`MBAI.NativeSettings.<Key>`), which its scripts read. While a fix is on, `bin/x64/plugins/cyber_engine_tweaks/mods/LinksCompat/init.lua` keeps those values at the locked setting: once after loading, then once a second. Much Better AI's own menu still shows its switches, but a change there is undone within a second.
 
