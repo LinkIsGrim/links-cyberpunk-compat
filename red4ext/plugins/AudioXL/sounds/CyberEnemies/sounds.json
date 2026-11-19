@@ -1,0 +1,13 @@
+{
+  "sounds": [
+    { "name": "medusa1",   "type": "mod_sfx_occlusion", "file": "Cassiopeia_Original_R_1.ogg", "gain": 1.0 },
+    { "name": "medusa2",   "type": "mod_sfx_occlusion", "file": "Cassiopeia_Original_R_5.ogg", "gain": 1.0 },
+    { "name": "banshee1",  "type": "mod_sfx_occlusion", "file": "banshee.mp3", "gain": 2.0 },
+    { "name": "banshee2",  "type": "mod_sfx_occlusion", "file": "banshee.mp3", "gain": 1.25 },
+    { "name": "banshee3",  "type": "mod_sfx_occlusion", "file": "banshee.mp3", "gain": 1.0 },
+    { "name": "banshee4",  "type": "mod_sfx_occlusion", "file": "banshee.mp3", "gain": 0.75 },
+    { "name": "banshee5",  "type": "mod_sfx_occlusion", "file": "banshee.mp3", "gain": 0.5 },
+    { "name": "banshee6",  "type": "mod_sfx_occlusion", "file": "banshee.mp3", "gain": 0.3 },
+    { "name": "ce_sonido", "type": "mod_sfx_occlusion", "file": "sonido.mp3", "gain": 3.0 }
+  ]
+}

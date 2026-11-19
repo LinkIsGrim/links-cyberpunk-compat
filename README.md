@@ -20,6 +20,18 @@ Turn a toggle off and this mod unlocks that setting and leaves it alone; it does
 
 Much Better AI keys: Firing Cadence = `MarksmanshipCadence`; Detection Speed = `StealthDetection`; Camera Reports & Detection = `EnableSensors`; Silent Hit Response = `StealthHitResponse` (from its `nativeSettingsUI.lua` and `config.reds`).
 
+## Cyber Enemies without Audioware
+
+Cyber Enemies plays its warning sounds (Banshee, Medusa, Gorgon) with the vanilla `AudioSystem.Play(n"banshee1", npc, ...)` call and ships them for Audioware. [AudioXL](https://www.nexusmods.com/cyberpunk2077/mods/33442) registers named sounds that this same call plays. So `red4ext/plugins/AudioXL/sounds/CyberEnemies/sounds.json` registers Cyber Enemies' names with the same gains, positioned on the NPC, and Audioware isn't needed.
+
+The sound files are Cyber Enemies' assets, so this repo doesn't include them. After installing Cyber Enemies, run:
+
+```bash
+tools/link-cyberenemies-audio.sh <mo2-instance>
+```
+
+It copies the four files from your Cyber Enemies install into this mod's folder.
+
 ## Requirements
 
 redscript, Mod Settings, and Cyber Engine Tweaks (for the Much Better AI locks).
