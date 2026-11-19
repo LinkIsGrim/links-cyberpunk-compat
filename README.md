@@ -7,7 +7,7 @@ Every fix is a toggle on this mod's **Mod Settings** page (*Link's Compatibility
 - **In the menu:** its row on the other mod's Mod Settings page is greyed out, labelled *[locked by Link's Compatibility]* and can't be changed. This works in the main menu too.
 - **Value:** it's applied when a save loads and again after any settings change, so it can't drift.
 
-Turn a toggle off and this mod unlocks that setting and leaves it alone; it doesn't revert it. Fixes for mods that aren't installed are skipped.
+Locks work on both on/off settings and drop-down (enum) settings. Turn a toggle off and this mod unlocks that setting and leaves it alone; it doesn't revert it. Fixes for mods that aren't installed are skipped.
 
 ## Fixes
 
@@ -17,6 +17,7 @@ Turn a toggle off and this mod unlocks that setting and leaves it alone; it does
 | Much Better AI: Gunsensical owns enemy firing cadence | MBAI Marksmanship > Firing Cadence = off | Much Better AI's compatibility list (Gunsensical Reloaded). |
 | Much Better AI: They Will Remember owns detection | MBAI Stealth > Detection Speed, Camera Reports & Detection = off | Much Better AI's compatibility list (They Will Remember). |
 | Much Better AI: Silent Silencers owns silent hits | MBAI Stealth > Silent Hit Response = off | Much Better AI's compatibility list (Silent Silencers and Throwing Knives). |
+| More Guns More Fun: match All Guns Are Cool | Cool → assault rifles/SMGs and Cool → shotguns/machine guns = Legend; the other 7 rows = Off | Gunsensical Reloaded is balanced around All Guns Are Cool, which More Guns More Fun replaces (its page: "All Guns Are Cool is not needed"). This keeps the same perk reach: only Cool's handgun and precision perks work with other guns. |
 | They Will Remember: stuns, EMPs, grapples, knockdowns and Cyberpsychosis interrupt calls | *(behaviour, not a setting; see below)* | Out of the box, They Will Remember only drops a reinforcement call when the caller dies or is hit with Comms Noise / Memory Wipe. |
 
 Much Better AI keys: Firing Cadence = `MarksmanshipCadence`; Detection Speed = `StealthDetection`; Camera Reports & Detection = `EnableSensors`; Silent Hit Response = `StealthHitResponse` (from its `nativeSettingsUI.lua` and `config.reds`).

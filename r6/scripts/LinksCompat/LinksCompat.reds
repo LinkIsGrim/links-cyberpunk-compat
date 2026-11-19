@@ -50,6 +50,14 @@ public class LinksCompatSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.description", "A ganger calling for reinforcements drops the call when stunned, EMP'd, grappled or knocked over, like when killed or hit with Comms Noise. Needs Codeware.")
     public let twrCallInterrupts: Bool = true;
 
+    // --- More Guns More Fun + Gunsensical Reloaded --------------------------------------
+    @runtimeProperty("ModSettings.mod", "Link's Compatibility")
+    @runtimeProperty("ModSettings.category", "More Guns More Fun")
+    @runtimeProperty("ModSettings.category.order", "40")
+    @runtimeProperty("ModSettings.displayName", "Match All Guns Are Cool (Gunsensical's balance)")
+    @runtimeProperty("ModSettings.description", "Gunsensical Reloaded is balanced around All Guns Are Cool: Cool's handgun and precision perks work with every gun, nothing else crosses over. Sets More Guns More Fun to exactly that: Cool rows for rifles/SMGs and shotguns/machine guns at Legend, every other row Off.")
+    public let mgmfMatchAgac: Bool = true;
+
     private func OnAttach() -> Void {
         // keeps the toggles above in sync with the menu / user.ini
         ModSettings.RegisterListenerToClass(this);
@@ -77,7 +85,19 @@ public abstract class LinksCompat {
     // Locked settings: target mod, target property, and the toggle (on our page) that owns it.
     public static func Locks() -> array<ref<LinksCompatLock>> {
         let out: array<ref<LinksCompatLock>>;
-        ArrayPush(out, LinksCompatLock.Make(n"DarkFutureSettingsModName", n"stashCraftingEnabled", n"dfStashCraftingOff"));
+        ArrayPush(out, LinksCompatLock.Make(n"DarkFutureSettingsModName", n"stashCraftingEnabled", n"dfStashCraftingOff", 0));
+        // More Guns More Fun tiers (MF_Tier): Off = 0 ... Legend = 4. All Guns Are Cool widens only
+        // Cool's handgun/precision perks to rifles, SMGs, shotguns and machine guns.
+        let mgmf = n"More Guns More Fun";
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"coolReflexes", n"mgmfMatchAgac", 4));
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"coolBody", n"mgmfMatchAgac", 4));
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"coolThrowable", n"mgmfMatchAgac", 0));
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"reflexesCool", n"mgmfMatchAgac", 0));
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"reflexesBody", n"mgmfMatchAgac", 0));
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"reflexesThrowable", n"mgmfMatchAgac", 0));
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"bodyCool", n"mgmfMatchAgac", 0));
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"bodyReflexes", n"mgmfMatchAgac", 0));
+        ArrayPush(out, LinksCompatLock.Make(mgmf, n"bodyThrowable", n"mgmfMatchAgac", 0));
         return out;
     }
 
@@ -114,10 +134,12 @@ public abstract class LinksCompat {
 
     public static func Apply(s: ref<LinksCompatSettings>) -> Void {
         let changed = false;
-        if s.dfStashCraftingOff {
-            changed = LinksCompat.SetBool(n"DarkFutureSettingsModName", n"stashCraftingEnabled", false) || changed;
+        for lock in LinksCompat.Locks() {
+            if LinksCompat.Field(s, lock.toggle) {
+                changed = LinksCompat.SetValue(lock.mod, lock.name, lock.value) || changed;
+            }
         }
-        // Much Better AI isn't a Mod Settings mod; its locks live in MuchBetterAILock.reds.
+        // Much Better AI isn't a Mod Settings mod; its locks are the CET script in bin/.
         if changed {
             ModSettings.AcceptChanges();
         }
@@ -130,19 +152,25 @@ public abstract class LinksCompat {
         if !IsDefined(s) {
             return true;
         }
+        return LinksCompat.Field(s, toggle);
+    }
+
+    public static func Field(s: ref<LinksCompatSettings>, toggle: CName) -> Bool {
         switch toggle {
             case n"mbaiFiringCadenceOff": return s.mbaiFiringCadenceOff;
             case n"mbaiDetectionOff": return s.mbaiDetectionOff;
             case n"mbaiSilentHitOff": return s.mbaiSilentHitOff;
             case n"dfStashCraftingOff": return s.dfStashCraftingOff;
             case n"twrCallInterrupts": return s.twrCallInterrupts;
+            case n"mgmfMatchAgac": return s.mgmfMatchAgac;
             default: return true;
         }
     }
 
-    // Requests a new value for a Mod Settings bool. Returns true when a change was requested.
-    // Does nothing if the mod isn't installed or the setting doesn't exist.
-    public static func SetBool(mod: CName, name: CName, value: Bool) -> Bool {
+    // Requests a new value for a Mod Settings bool (0/1) or enum (the enum's value, not its
+    // menu index). Returns true when a change was requested. Does nothing if the mod isn't
+    // installed or the setting doesn't exist.
+    public static func SetValue(mod: CName, name: CName, value: Int32) -> Bool {
         if Equals(mod, n"None") || Equals(name, n"None") || !ArrayContains(ModSettings.GetMods(), mod) {
             return false;
         }
@@ -152,9 +180,20 @@ public abstract class LinksCompat {
             for v in ModSettings.GetVars(mod, cat) {
                 if Equals(v.GetName(), name) {
                     let b = v as ModConfigVarBool;
-                    if IsDefined(b) && NotEquals(b.GetValue(), value) {
-                        b.SetValue(value);
-                        return true;
+                    if IsDefined(b) {
+                        if NotEquals(b.GetValue(), value != 0) {
+                            b.SetValue(value != 0);
+                            return true;
+                        }
+                        return false;
+                    }
+                    let e = v as ModConfigVarEnum;
+                    if IsDefined(e) && e.GetValue() != value {
+                        let index = e.GetIndexFor(value);
+                        if index >= 0 {
+                            e.SetIndex(index);
+                            return true;
+                        }
                     }
                     return false;
                 }
@@ -168,12 +207,14 @@ public class LinksCompatLock {
     public let mod: CName;
     public let name: CName;
     public let toggle: CName;
+    public let value: Int32;  // bool as 0/1, or an enum value
 
-    public static func Make(mod: CName, name: CName, toggle: CName) -> ref<LinksCompatLock> {
+    public static func Make(mod: CName, name: CName, toggle: CName, value: Int32) -> ref<LinksCompatLock> {
         let l = new LinksCompatLock();
         l.mod = mod;
         l.name = name;
         l.toggle = toggle;
+        l.value = value;
         return l;
     }
 }
