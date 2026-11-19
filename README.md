@@ -18,21 +18,23 @@ Turn a toggle off and this mod unlocks that setting and leaves it alone; it does
 | Much Better AI: They Will Remember owns detection | MBAI Stealth > Detection Speed, Camera Reports & Detection = off | Much Better AI's compatibility list (They Will Remember). |
 | Much Better AI: Silent Silencers owns silent hits | MBAI Stealth > Silent Hit Response = off | Much Better AI's compatibility list (Silent Silencers and Throwing Knives). |
 
-The Much Better AI fixes are placeholders until its settings class is filled in (`LinksCompat.Mbai*`).
+Much Better AI keys: Firing Cadence = `MarksmanshipCadence`; Detection Speed = `StealthDetection`; Camera Reports & Detection = `EnableSensors`; Silent Hit Response = `StealthHitResponse` (from its `nativeSettingsUI.lua` and `config.reds`).
 
 ## Requirements
 
-redscript and Mod Settings.
+redscript, Mod Settings, and Cyber Engine Tweaks (for the Much Better AI locks).
 
 ## Install (MO2)
 
-Install this folder as a mod (it contains only `r6/scripts/LinksCompat/`). Its position in the mod list doesn't matter.
+Install this folder as a mod (`r6/scripts/LinksCompat/` and `bin/x64/plugins/cyber_engine_tweaks/mods/LinksCompat/`). Its position in the mod list doesn't matter.
 
 ## How the lock works
 
 `ModSettingsLock.reds` wraps the vanilla settings row (`SettingsSelectorController.Setup`). Every Mod Settings row passes through it, because Mod Settings' row controllers call `super.Setup` first. Rows whose variable path is `/mods/<locked mod>/…` are made non-interactive and labelled.
 
-Mod Settings' own menu classes can't be wrapped: they're loaded from its RED4ext plugin script folder, and `@wrapMethod` can't target classes from there. I verified this with the compiler.
+In this redscript version, `@wrapMethod` can only target the game's own classes, not classes added by other mods. I verified this with the compiler against both Mod Settings' and Much Better AI's classes. That's why the lock hooks the vanilla row.
+
+**Mods that don't use Mod Settings** get a CET Lua lock instead. Much Better AI keeps its settings in a CET menu and publishes each one as a TweakDB value (`MBAI.NativeSettings.<Key>`), which its scripts read. While a fix is on, `bin/x64/plugins/cyber_engine_tweaks/mods/LinksCompat/init.lua` keeps those values at the locked setting: once after loading, then once a second. Much Better AI's own menu still shows its switches, but a change there is undone within a second.
 
 ## Checking
 

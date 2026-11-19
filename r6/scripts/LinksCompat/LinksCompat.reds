@@ -70,10 +70,6 @@ public abstract class LinksCompat {
     public static func Locks() -> array<ref<LinksCompatLock>> {
         let out: array<ref<LinksCompatLock>>;
         ArrayPush(out, LinksCompatLock.Make(n"DarkFutureSettingsModName", n"stashCraftingEnabled", n"dfStashCraftingOff"));
-        ArrayPush(out, LinksCompatLock.Make(LinksCompat.MbaiMod(), LinksCompat.MbaiFiringCadence(), n"mbaiFiringCadenceOff"));
-        ArrayPush(out, LinksCompatLock.Make(LinksCompat.MbaiMod(), LinksCompat.MbaiDetectionSpeed(), n"mbaiDetectionOff"));
-        ArrayPush(out, LinksCompatLock.Make(LinksCompat.MbaiMod(), LinksCompat.MbaiCameraReports(), n"mbaiDetectionOff"));
-        ArrayPush(out, LinksCompatLock.Make(LinksCompat.MbaiMod(), LinksCompat.MbaiSilentHit(), n"mbaiSilentHitOff"));
         return out;
     }
 
@@ -113,28 +109,27 @@ public abstract class LinksCompat {
         if s.dfStashCraftingOff {
             changed = LinksCompat.SetBool(n"DarkFutureSettingsModName", n"stashCraftingEnabled", false) || changed;
         }
-        // Much Better AI's setting names are filled in from its scripts (see MBAI_* below).
-        if s.mbaiFiringCadenceOff {
-            changed = LinksCompat.SetBool(LinksCompat.MbaiMod(), LinksCompat.MbaiFiringCadence(), false) || changed;
-        }
-        if s.mbaiDetectionOff {
-            changed = LinksCompat.SetBool(LinksCompat.MbaiMod(), LinksCompat.MbaiDetectionSpeed(), false) || changed;
-            changed = LinksCompat.SetBool(LinksCompat.MbaiMod(), LinksCompat.MbaiCameraReports(), false) || changed;
-        }
-        if s.mbaiSilentHitOff {
-            changed = LinksCompat.SetBool(LinksCompat.MbaiMod(), LinksCompat.MbaiSilentHit(), false) || changed;
-        }
+        // Much Better AI isn't a Mod Settings mod; its locks live in MuchBetterAILock.reds.
         if changed {
             ModSettings.AcceptChanges();
         }
     }
 
-    // Placeholders until Much Better AI's settings class has been read.
-    public static func MbaiMod() -> CName { return n"None"; }
-    public static func MbaiFiringCadence() -> CName { return n"None"; }
-    public static func MbaiDetectionSpeed() -> CName { return n"None"; }
-    public static func MbaiCameraReports() -> CName { return n"None"; }
-    public static func MbaiSilentHit() -> CName { return n"None"; }
+    // Fast toggle read for hot paths (MBAI calls its settings getters constantly): a field read
+    // on our scriptable system. Before a save is loaded there's no system; default is on.
+    public static func On(toggle: CName) -> Bool {
+        let s = GameInstance.GetScriptableSystemsContainer(GetGameInstance()).Get(n"LinksCompat.LinksCompatSettings") as LinksCompatSettings;
+        if !IsDefined(s) {
+            return true;
+        }
+        switch toggle {
+            case n"mbaiFiringCadenceOff": return s.mbaiFiringCadenceOff;
+            case n"mbaiDetectionOff": return s.mbaiDetectionOff;
+            case n"mbaiSilentHitOff": return s.mbaiSilentHitOff;
+            case n"dfStashCraftingOff": return s.dfStashCraftingOff;
+            default: return true;
+        }
+    }
 
     // Requests a new value for a Mod Settings bool. Returns true when a change was requested.
     // Does nothing if the mod isn't installed or the setting doesn't exist.

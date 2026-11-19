@@ -2,8 +2,8 @@
 //
 // Hooks the vanilla settings row (SettingsSelectorController.Setup). Mod Settings builds its
 // rows from subclasses that call super.Setup first, so every Mod Settings row passes here.
-// (Annotations can't target Mod Settings' own classes: they are loaded from its RED4ext
-// plugin script folder, which @wrapMethod can't see.) Vanilla settings rows are untouched:
+// (@wrapMethod here can only target the game's own classes, not other mods' - verified with
+// the redscript compiler against Mod Settings' and Much Better AI's classes.) Vanilla rows are untouched:
 // only variables whose group path is "/mods/<locked mod>/..." are locked.
 import LinksCompat.*
 
