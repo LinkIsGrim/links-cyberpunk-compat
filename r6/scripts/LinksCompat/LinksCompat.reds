@@ -5,9 +5,12 @@
 // values are saved in Mod Settings' user.ini as if you had changed them yourself.
 //
 // Every fix is a toggle on this mod's own Mod Settings page. While a toggle is on, the
-// fix is (re)applied each time a save loads; turn it off and this mod leaves that
-// setting alone. Fixes for mods that aren't installed are skipped.
+// setting is LOCKED: its row in the other mod's Mod Settings page is greyed out and
+// labelled, and the value is re-applied on save load and after any settings change.
+// Turn the toggle off and this mod leaves that setting alone. Fixes for mods that
+// aren't installed are skipped.
 module LinksCompat
+
 
 public class LinksCompatSettings extends ScriptableSystem {
 
@@ -61,6 +64,50 @@ public class LinksCompatSettings extends ScriptableSystem {
 
 public abstract class LinksCompat {
 
+    public static func OwnMod() -> CName { return n"Link's Compatibility"; }
+
+    // Locked settings: target mod, target property, and the toggle (on our page) that owns it.
+    public static func Locks() -> array<ref<LinksCompatLock>> {
+        let out: array<ref<LinksCompatLock>>;
+        ArrayPush(out, LinksCompatLock.Make(n"DarkFutureSettingsModName", n"stashCraftingEnabled", n"dfStashCraftingOff"));
+        ArrayPush(out, LinksCompatLock.Make(LinksCompat.MbaiMod(), LinksCompat.MbaiFiringCadence(), n"mbaiFiringCadenceOff"));
+        ArrayPush(out, LinksCompatLock.Make(LinksCompat.MbaiMod(), LinksCompat.MbaiDetectionSpeed(), n"mbaiDetectionOff"));
+        ArrayPush(out, LinksCompatLock.Make(LinksCompat.MbaiMod(), LinksCompat.MbaiCameraReports(), n"mbaiDetectionOff"));
+        ArrayPush(out, LinksCompatLock.Make(LinksCompat.MbaiMod(), LinksCompat.MbaiSilentHit(), n"mbaiSilentHitOff"));
+        return out;
+    }
+
+    // Is this Mod Settings variable locked right now? Reads our toggles through Mod Settings,
+    // so it also works in the main menu before any save (and our system) is loaded.
+    public static func IsLocked(entry: ref<ConfigVar>) -> Bool {
+        if !IsDefined(entry) {
+            return false;
+        }
+        let path = NameToString(entry.GetGroupPath());  // "/mods/<mod>/<class>"
+        for lock in LinksCompat.Locks() {
+            if NotEquals(lock.mod, n"None") && Equals(entry.GetName(), lock.name)
+                && StrBeginsWith(path, "/mods/" + NameToString(lock.mod) + "/")
+                && LinksCompat.OwnToggle(lock.toggle) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static func OwnToggle(name: CName) -> Bool {
+        let cats = ModSettings.GetCategories(LinksCompat.OwnMod());
+        ArrayPush(cats, n"None");
+        for cat in cats {
+            for v in ModSettings.GetVars(LinksCompat.OwnMod(), cat) {
+                if Equals(v.GetName(), name) {
+                    let b = v as ModConfigVarBool;
+                    return IsDefined(b) && b.GetValue();
+                }
+            }
+        }
+        return true;  // our own page not registered yet: default is on
+    }
+
     public static func Apply(s: ref<LinksCompatSettings>) -> Void {
         let changed = false;
         if s.dfStashCraftingOff {
@@ -110,5 +157,19 @@ public abstract class LinksCompat {
             }
         }
         return false;
+    }
+}
+
+public class LinksCompatLock {
+    public let mod: CName;
+    public let name: CName;
+    public let toggle: CName;
+
+    public static func Make(mod: CName, name: CName, toggle: CName) -> ref<LinksCompatLock> {
+        let l = new LinksCompatLock();
+        l.mod = mod;
+        l.name = name;
+        l.toggle = toggle;
+        return l;
     }
 }
