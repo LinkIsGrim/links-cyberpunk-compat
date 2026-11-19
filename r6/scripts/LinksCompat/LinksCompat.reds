@@ -42,6 +42,14 @@ public class LinksCompatSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.description", "Turns off Much Better AI's Stealth > Silent Hit Response so Silent Silencers and Throwing Knives' suppressed-shot and knife-hit rules apply.")
     public let mbaiSilentHitOff: Bool = true;
 
+    // --- They Will Remember -------------------------------------------------------------
+    @runtimeProperty("ModSettings.mod", "Link's Compatibility")
+    @runtimeProperty("ModSettings.category", "They Will Remember")
+    @runtimeProperty("ModSettings.category.order", "30")
+    @runtimeProperty("ModSettings.displayName", "Stuns, EMPs, grapples and knockdowns interrupt calls")
+    @runtimeProperty("ModSettings.description", "A ganger calling for reinforcements drops the call when stunned, EMP'd, grappled or knocked over, like when killed or hit with Comms Noise. Needs Codeware.")
+    public let twrCallInterrupts: Bool = true;
+
     private func OnAttach() -> Void {
         // keeps the toggles above in sync with the menu / user.ini
         ModSettings.RegisterListenerToClass(this);
@@ -127,6 +135,7 @@ public abstract class LinksCompat {
             case n"mbaiDetectionOff": return s.mbaiDetectionOff;
             case n"mbaiSilentHitOff": return s.mbaiSilentHitOff;
             case n"dfStashCraftingOff": return s.dfStashCraftingOff;
+            case n"twrCallInterrupts": return s.twrCallInterrupts;
             default: return true;
         }
     }
