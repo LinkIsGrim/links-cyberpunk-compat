@@ -22,6 +22,10 @@ Locks work on both on/off settings and drop-down (enum) settings. Turn a toggle 
 
 Much Better AI keys: Firing Cadence = `MarksmanshipCadence`; Detection Speed = `StealthDetection`; Camera Reports & Detection = `EnableSensors`; Silent Hit Response = `StealthHitResponse` (from its `nativeSettingsUI.lua` and `config.reds`).
 
+## Live A Little: Vik's debt
+
+`r6/tweaks/LinksCompat/live_a_little.yaml` sets Vik's debt (`EconomicAssignment.q001_victor_debt.overrideValue`) to 33,000. Live A Little sets it to 63,000, but the quest text it shows says 33,000. This one is a tweak, not a toggle: to keep Live A Little's 63,000, delete the file or pick Live A Little for that key in the mo2linttricks patch.
+
 ## They Will Remember: call interrupts
 
 While the toggle is on, a ganger who is calling for reinforcements drops the call if they're stunned, EMP'd, grappled, knocked over (ragdolled) or hit with Cyberpsychosis. The idea comes from Reinforcements System; no code is taken from it.
