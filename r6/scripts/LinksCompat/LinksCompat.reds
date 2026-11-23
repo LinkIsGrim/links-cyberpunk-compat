@@ -58,6 +58,20 @@ public class LinksCompatSettings extends ScriptableSystem {
     @runtimeProperty("ModSettings.description", "Gunsensical Reloaded is balanced around All Guns Are Cool: Cool's handgun and precision perks work with every gun, nothing else crosses over. Sets More Guns More Fun to exactly that: Cool rows for rifles/SMGs and shotguns/machine guns at Legend, every other row Off.")
     public let mgmfMatchAgac: Bool = true;
 
+    // --- Weapon Conditioning (+ Ripperdoc Service Charge, EconomyPunk) -----------------
+    @runtimeProperty("ModSettings.mod", "Link's Compatibility")
+    @runtimeProperty("ModSettings.category", "Weapon Conditioning")
+    @runtimeProperty("ModSettings.category.order", "50")
+    @runtimeProperty("ModSettings.displayName", "Cheaper, money-only cyberarm maintenance")
+    @runtimeProperty("ModSettings.description", "Ripperdocs maintain cyberarms for eddies only, no crafting components, at half Weapon Conditioning's default price (money factor 0.2 instead of 0.4). Do-it-yourself cyberarm maintenance is turned off, since it would be free. Upgrades still cost components.")
+    public let wcCheapMaintenance: Bool = true;
+
+    @runtimeProperty("ModSettings.mod", "Link's Compatibility")
+    @runtimeProperty("ModSettings.category", "Weapon Conditioning")
+    @runtimeProperty("ModSettings.displayName", "Technical Ability: cheaper maintenance, slower wear")
+    @runtimeProperty("ModSettings.description", "Each Technical Ability point above 3 makes weapon and cyberarm maintenance 2.5% cheaper and wear 2% slower (at 20: 42.5% cheaper, 34% slower).")
+    public let wcTechBonus: Bool = true;
+
     private func OnAttach() -> Void {
         // keeps the toggles above in sync with the menu / user.ini
         ModSettings.RegisterListenerToClass(this);
@@ -163,6 +177,8 @@ public abstract class LinksCompat {
             case n"dfStashCraftingOff": return s.dfStashCraftingOff;
             case n"twrCallInterrupts": return s.twrCallInterrupts;
             case n"mgmfMatchAgac": return s.mgmfMatchAgac;
+            case n"wcCheapMaintenance": return s.wcCheapMaintenance;
+            case n"wcTechBonus": return s.wcTechBonus;
             default: return true;
         }
     }

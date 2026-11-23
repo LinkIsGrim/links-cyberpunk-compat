@@ -19,8 +19,18 @@ Locks work on both on/off settings and drop-down (enum) settings. Turn a toggle 
 | Much Better AI: Silent Silencers owns silent hits | MBAI Stealth > Silent Hit Response = off | Much Better AI's compatibility list (Silent Silencers and Throwing Knives). |
 | More Guns More Fun: match All Guns Are Cool | Cool → assault rifles/SMGs and Cool → shotguns/machine guns = Legend; the other 7 rows = Off | Gunsensical Reloaded is balanced around All Guns Are Cool, which More Guns More Fun replaces (its page: "All Guns Are Cool is not needed"). This keeps the same perk reach: only Cool's handgun and precision perks work with other guns. |
 | They Will Remember: stuns, EMPs, grapples, knockdowns and Cyberpsychosis interrupt calls | *(behaviour, not a setting; see below)* | Out of the box, They Will Remember only drops a reinforcement call when the caller dies or is hit with Comms Noise / Memory Wipe. |
+| Weapon Conditioning: cheaper, money-only cyberarm maintenance | Cyberarm maintenance material factor = 0, money factor = 0.2 (default 0.4), do-it-yourself cyberarm maintenance off | EconomyPunk cuts income hard, and a ripperdoc doing maintenance shouldn't need your crafting components. Upgrades still cost components. Do-it-yourself is off because with no materials it would be free. |
+| Weapon Conditioning: Technical Ability makes maintenance cheaper and wear slower | Per Technical Ability point above 3 (capped at 20): maintenance 2.5% cheaper (cyberarm money, weapon materials), wear 2% slower (weapons and cyberarms) | Nothing in the game ties Tech to upkeep. |
 
 Much Better AI keys: Firing Cadence = `MarksmanshipCadence`; Detection Speed = `StealthDetection`; Camera Reports & Detection = `EnableSensors`; Silent Hit Response = `StealthHitResponse` (from its `nativeSettingsUI.lua` and `config.reds`).
+
+## Weapon Conditioning maintenance
+
+Weapon Conditioning keeps its settings in [Redscript Configuration Framework](https://www.nexusmods.com/cyberpunk2077/mods/30726), not Mod Settings. `WCMaintenance.reds` writes them through RCF's public API (`DVRCF.SetFloat` / `SetBool`), which saves them to Weapon Conditioning's RCF file like its own menu does. While a toggle is on, the values are re-applied every 5 seconds, writing only when one differs, so a change in Weapon Conditioning's menu is undone shortly after. Weapon Conditioning bakes its maintenance material multipliers into per-item configs at session start, so after a change the file rebuilds them the same way Weapon Conditioning does.
+
+The Technical Ability bonus scales from fixed baselines (Weapon Conditioning's defaults, or this mod's cheaper values), so it never compounds. Turning both toggles off leaves the last written values in place.
+
+Ripperdoc Service Charge also sets the price of the same upgrade check (`RPGManager.CanUpgradeCyberware`) to its full upgrade fee. Which mod's price you see depends on which hook runs last; if a maintenance job costs as much as an upgrade, it's Ripperdoc Service Charge's, and the money factor here has no effect.
 
 ## Live A Little: Vik's debt
 
